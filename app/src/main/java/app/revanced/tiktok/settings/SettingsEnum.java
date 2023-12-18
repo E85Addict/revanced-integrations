@@ -27,6 +27,7 @@ public enum SettingsEnum {
     DOWNLOAD_PATH("down_path", STRING, "DCIM/TikTok"),
     DOWNLOAD_WATERMARK("down_watermark", BOOLEAN, TRUE),
     REMEMBERED_SPEED("REMEMBERED_SPEED", FLOAT, 1.0f),
+    CLEARMODE("clearmode", BOOLEAN, FALSE),
     SIM_SPOOF("simspoof", BOOLEAN, TRUE, true),
     SIM_SPOOF_ISO("simspoof_iso", STRING, "us"),
     SIMSPOOF_MCCMNC("simspoof_mccmnc", STRING, "310160"),
