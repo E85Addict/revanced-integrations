@@ -12,6 +12,7 @@ import java.util.Map;
 
 import static app.revanced.tiktok.settings.SettingsEnum.ReturnType.BOOLEAN;
 import static app.revanced.tiktok.settings.SettingsEnum.ReturnType.STRING;
+import static app.revanced.tiktok.settings.SettingsEnum.ReturnType.FLOAT;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
@@ -25,6 +26,7 @@ public enum SettingsEnum {
     MIN_MAX_LIKES("min_max_likes", STRING, "0-" + Long.MAX_VALUE, true),
     DOWNLOAD_PATH("down_path", STRING, "DCIM/TikTok"),
     DOWNLOAD_WATERMARK("down_watermark", BOOLEAN, TRUE),
+    REMEMBERED_SPEED("REMEMBERED_SPEED", FLOAT, 1.0f),
     SIM_SPOOF("simspoof", BOOLEAN, TRUE, true),
     SIM_SPOOF_ISO("simspoof_iso", STRING, "us"),
     SIMSPOOF_MCCMNC("simspoof_mccmnc", STRING, "310160"),
@@ -77,35 +79,29 @@ public enum SettingsEnum {
 
     private static void loadAllSettings() {
         try {
-            Context context = ReVancedUtils.getAppContext();
-            if (context == null) {
-                Log.e("revanced: SettingsEnum", "Context returned null! Settings NOT initialized");
-                return;
-            }
-            for (SettingsEnum setting : values()) {
-                setting.load(context);
-            }
+            for (SettingsEnum setting : values())
+                setting.load();
         } catch (Exception ex) {
             LogHelper.printException(SettingsEnum.class, "Error during load()!", ex);
         }
     }
 
-    private void load(Context context) {
+    private void load() {
         switch (returnType) {
             case BOOLEAN:
-                value = sharedPref.getBoolean(context, path, (boolean) defaultValue);
+                value = sharedPref.getBoolean(path, (boolean) defaultValue);
                 break;
             case INTEGER:
-                value = sharedPref.getInt(context, path, (Integer) defaultValue);
+                value = sharedPref.getInt(path, (Integer) defaultValue);
                 break;
             case LONG:
-                value = sharedPref.getLong(context, path, (Long) defaultValue);
+                value = sharedPref.getLong(path, (Long) defaultValue);
                 break;
             case FLOAT:
-                value = sharedPref.getFloat(context, path, (Float) defaultValue);
+                value = sharedPref.getFloat(path, (Float) defaultValue);
                 break;
             case STRING:
-                value = sharedPref.getString(context, path, (String) defaultValue);
+                value = sharedPref.getString(path, (String) defaultValue);
                 break;
             default:
                 throw new IllegalStateException(name());
@@ -126,16 +122,12 @@ public enum SettingsEnum {
     }
 
     public void saveValue(Object newValue) {
-        Context context = ReVancedUtils.getAppContext();
-        if (context == null) {
-            LogHelper.printException(SettingsEnum.class, "Context on SaveValue is null!");
-            return;
-        }
-
         if (returnType == BOOLEAN) {
-            sharedPref.saveBoolean(context, path, (Boolean) newValue);
+            sharedPref.saveBoolean(path, (Boolean) newValue);
+        } else if (returnType == FLOAT) {
+            sharedPref.saveFloatString(path, (Float) newValue);
         } else {
-            sharedPref.saveString(context, path, newValue.toString());
+            sharedPref.saveString(path, newValue.toString());
         }
         value = newValue;
     }
